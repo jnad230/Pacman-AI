@@ -30,12 +30,18 @@ class q1c_problem:
     @log_function
     def getStartState(self):
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # Get pac man's initial position
+        pacman_position = self.startingGameState.getPacmanPosition()
+
+        # Get food positions in a grid and remaining food count
+        food_locations = self.startingGameState.getFood().asList()
+
+        return (pacman_position, frozenset(food_locations))
 
     @log_function
     def isGoalState(self, state):
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return len(state[1]) == 0
 
     @log_function
     def getSuccessors(self, state):
@@ -50,5 +56,30 @@ class q1c_problem:
          cost of expanding to that successor
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        successors = []
+
+        _directions = {Directions.NORTH: (0, 1),
+                   Directions.SOUTH: (0, -1),
+                   Directions.EAST:  (1, 0),
+                   Directions.WEST:  (-1, 0)}
+
+        _directionsAsList = _directions.items()
+
+        x, y = state[0]
+        food_locations = state[1]
+        x_int, y_int = int(x+0.5), int(y+0.5)
+        successors = []
+        
+        # Getting the possible actions given the position of pacman
+        for dir, vec in _directionsAsList:
+            dx, dy = vec
+            next_x = x_int + dx
+            next_y = y_int + dy
+            
+            if not self.startingGameState.hasWall(next_x, next_y):
+                new_remaining_goals = food_locations - frozenset([(next_x, next_y)])
+
+                successors.append((((next_x, next_y), new_remaining_goals), dir, 1))
+
+        return successors
 
